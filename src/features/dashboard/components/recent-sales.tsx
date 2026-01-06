@@ -10,9 +10,9 @@ export function RecentSales() {
         </Avatar>
         <div className='flex flex-1 flex-wrap items-center justify-between'>
           <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>Olivia Martin</p>
+            <p className='text-sm leading-none font-medium'>王小明</p>
             <p className='text-sm text-muted-foreground'>
-              olivia.martin@email.com
+              wangxiaoming@email.com
             </p>
           </div>
           <div className='font-medium'>+$1,999.00</div>
@@ -25,9 +25,9 @@ export function RecentSales() {
         </Avatar>
         <div className='flex flex-1 flex-wrap items-center justify-between'>
           <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>Jackson Lee</p>
+            <p className='text-sm leading-none font-medium'>李华</p>
             <p className='text-sm text-muted-foreground'>
-              jackson.lee@email.com
+              lihua@email.com
             </p>
           </div>
           <div className='font-medium'>+$39.00</div>
@@ -40,9 +40,9 @@ export function RecentSales() {
         </Avatar>
         <div className='flex flex-1 flex-wrap items-center justify-between'>
           <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>Isabella Nguyen</p>
+            <p className='text-sm leading-none font-medium'>张丽</p>
             <p className='text-sm text-muted-foreground'>
-              isabella.nguyen@email.com
+              zhangli@email.com
             </p>
           </div>
           <div className='font-medium'>+$299.00</div>
@@ -56,8 +56,8 @@ export function RecentSales() {
         </Avatar>
         <div className='flex flex-1 flex-wrap items-center justify-between'>
           <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>William Kim</p>
-            <p className='text-sm text-muted-foreground'>will@email.com</p>
+            <p className='text-sm leading-none font-medium'>刘强</p>
+            <p className='text-sm text-muted-foreground'>liuqiang@email.com</p>
           </div>
           <div className='font-medium'>+$99.00</div>
         </div>
@@ -70,9 +70,9 @@ export function RecentSales() {
         </Avatar>
         <div className='flex flex-1 flex-wrap items-center justify-between'>
           <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>Sofia Davis</p>
+            <p className='text-sm leading-none font-medium'>赵敏</p>
             <p className='text-sm text-muted-foreground'>
-              sofia.davis@email.com
+              zhaomin@email.com
             </p>
           </div>
           <div className='font-medium'>+$39.00</div>
