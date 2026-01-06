@@ -4,10 +4,11 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Loader2, LogIn } from 'lucide-react'
-import { toast } from 'sonner'
 import { IconFacebook, IconGithub } from '@/assets/brand-icons'
 import { useAuthStore } from '@/stores/auth-store'
-import { sleep, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { login } from '@/features/auth/api/auth-api'
+import type { AuthUser } from '@/types/auth'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -51,34 +52,32 @@ export function UserAuthForm({
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
+    try {
+      const response = await login({
+        email: data.email,
+        password: data.password,
+      })
 
-    toast.promise(sleep(2000), {
-      loading: '正在登录...',
-      success: () => {
-        setIsLoading(false)
+      const authUser: AuthUser = {
+        id: response.user.id,
+        username: response.user.username,
+        email: response.user.email,
+        nickname: response.user.nickname,
+        avatar: response.user.avatar,
+        status: response.user.status,
+      }
 
-        // Mock successful authentication with expiry computed at success time
-        const mockUser = {
-          accountNo: 'ACC001',
-          email: data.email,
-          role: ['user'],
-          exp: Date.now() + 24 * 60 * 60 * 1000, // 24 hours from now
-        }
+      auth.setAuth(authUser, response.access_token)
 
-        // Set user and access token
-        auth.setUser(mockUser)
-        auth.setAccessToken('mock-access-token')
-
-        // Redirect to the stored location or default to dashboard
-        const targetPath = redirectTo || '/'
-        navigate({ to: targetPath, replace: true })
-
-        return `欢迎回来，${data.email}！`
-      },
-      error: '错误',
-    })
+      const targetPath = redirectTo || '/'
+      navigate({ to: targetPath, replace: true })
+    } catch (error) {
+      // 错误已由 axios 拦截器处理
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

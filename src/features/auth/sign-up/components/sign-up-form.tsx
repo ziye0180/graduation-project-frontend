@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import { IconFacebook, IconGithub } from '@/assets/brand-icons'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -15,6 +17,9 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import { register } from '@/features/auth/api/auth-api'
+import { useAuthStore } from '@/stores/auth-store'
+import type { AuthUser } from '@/types/auth'
 
 const formSchema = z
   .object({
@@ -33,11 +38,22 @@ const formSchema = z
     path: ['confirmPassword'],
   })
 
+/**
+ * 注册表单组件。
+ *
+ * 提供用户注册功能，包括邮箱、密码输入和第三方登录选项。
+ * 注册成功后自动登录并跳转到首页。
+ *
+ * @param className - 额外的类名
+ * @param props - 其他表单属性
+ */
 export function SignUpForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLFormElement>) {
   const [isLoading, setIsLoading] = useState(false)
+  const auth = useAuthStore((state) => state.auth)
+  const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,14 +64,47 @@ export function SignUpForm({
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  /**
+   * 处理表单提交。
+   *
+   * 调用注册 API，成功后自动登录并跳转到首页。
+   *
+   * @param data - 表单数据
+   */
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
+    try {
+      // 从邮箱提取用户名（@之前的部分）
+      const username = data.email.split('@')[0]
 
-    setTimeout(() => {
+      const response = await register({
+        username,
+        email: data.email,
+        password: data.password,
+      })
+
+      // 构建认证用户信息
+      const authUser: AuthUser = {
+        id: response.user.id,
+        username: response.user.username,
+        email: response.user.email,
+        nickname: response.user.nickname,
+        avatar: response.user.avatar,
+        status: response.user.status,
+      }
+
+      // 保存认证信息到 store
+      auth.setAuth(authUser, response.access_token)
+
+      toast.success('注册成功！')
+
+      // 跳转到首页
+      navigate({ to: '/', replace: true })
+    } catch {
+      // 错误由 axios 拦截器统一处理
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
   }
 
   return (
