@@ -16,7 +16,6 @@ import {
   UserCog,
   UserX,
   Users,
-  MessagesSquare,
   ShieldCheck,
   AudioWaveform,
   Command,
@@ -65,12 +64,6 @@ export const sidebarData: SidebarData = {
           title: '应用',
           url: '/apps',
           icon: Package,
-        },
-        {
-          title: '聊天',
-          url: '/chats',
-          badge: '3',
-          icon: MessagesSquare,
         },
         {
           title: '用户',
