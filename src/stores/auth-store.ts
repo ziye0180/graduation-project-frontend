@@ -1,53 +1,87 @@
 import { create } from 'zustand'
-import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import type { AuthUser } from '@/types/auth'
 
-const ACCESS_TOKEN = 'thisisjustarandomstring'
-
-interface AuthUser {
-  accountNo: string
-  email: string
-  role: string[]
-  exp: number
-}
-
+/**
+ * 认证状态接口。
+ */
 interface AuthState {
   auth: {
     user: AuthUser | null
-    setUser: (user: AuthUser | null) => void
     accessToken: string
-    setAccessToken: (accessToken: string) => void
-    resetAccessToken: () => void
+    isAuthenticated: boolean
+    setUser: (user: AuthUser | null) => void
+    setAccessToken: (token: string) => void
+    setAuth: (user: AuthUser, token: string) => void
     reset: () => void
   }
 }
 
-export const useAuthStore = create<AuthState>()((set) => {
-  const cookieState = getCookie(ACCESS_TOKEN)
-  const initToken = cookieState ? JSON.parse(cookieState) : ''
-  return {
-    auth: {
-      user: null,
-      setUser: (user) =>
-        set((state) => ({ ...state, auth: { ...state.auth, user } })),
-      accessToken: initToken,
-      setAccessToken: (accessToken) =>
-        set((state) => {
-          setCookie(ACCESS_TOKEN, JSON.stringify(accessToken))
-          return { ...state, auth: { ...state.auth, accessToken } }
-        }),
-      resetAccessToken: () =>
-        set((state) => {
-          removeCookie(ACCESS_TOKEN)
-          return { ...state, auth: { ...state.auth, accessToken: '' } }
-        }),
-      reset: () =>
-        set((state) => {
-          removeCookie(ACCESS_TOKEN)
-          return {
-            ...state,
-            auth: { ...state.auth, user: null, accessToken: '' },
-          }
-        }),
-    },
-  }
-})
+/**
+ * 认证状态存储。
+ *
+ * @example
+ * ```tsx
+ * const { user, accessToken, setAuth, reset } = useAuthStore((state) => state.auth)
+ * ```
+ */
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      auth: {
+        user: null,
+        accessToken: '',
+        isAuthenticated: false,
+
+        setUser: (user) =>
+          set((state) => ({
+            auth: {
+              ...state.auth,
+              user,
+              isAuthenticated: !!user && !!state.auth.accessToken,
+            },
+          })),
+
+        setAccessToken: (accessToken) =>
+          set((state) => ({
+            auth: {
+              ...state.auth,
+              accessToken,
+              isAuthenticated: !!state.auth.user && !!accessToken,
+            },
+          })),
+
+        setAuth: (user, accessToken) =>
+          set((state) => ({
+            auth: {
+              ...state.auth,
+              user,
+              accessToken,
+              isAuthenticated: true,
+            },
+          })),
+
+        reset: () =>
+          set((state) => ({
+            auth: {
+              ...state.auth,
+              user: null,
+              accessToken: '',
+              isAuthenticated: false,
+            },
+          })),
+      },
+    }),
+    {
+      name: 'literature-auth-storage',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        auth: {
+          user: state.auth.user,
+          accessToken: state.auth.accessToken,
+          isAuthenticated: state.auth.isAuthenticated,
+        },
+      }),
+    }
+  )
+)
