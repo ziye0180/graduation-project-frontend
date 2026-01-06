@@ -14,19 +14,19 @@ export const literatureFormSchema = z.object({
   keywords: z.string().max(500, '关键词最多500字符').optional(),
   doi: z.string().max(100, 'DOI最多100字符').optional(),
   publishYear: z.coerce
-    .number({ invalid_type_error: '请输入有效的年份' })
+    .number({ message: '请输入有效的年份' })
     .min(1900, '年份不能早于1900年')
     .max(2100, '年份不能晚于2100年')
     .optional()
     .or(z.literal('')),
   journal: z.string().max(200, '期刊名称最多200字符').optional(),
   categoryId: z.coerce
-    .number({ invalid_type_error: '请选择有效的分类' })
+    .number({ message: '请选择有效的分类' })
     .optional()
     .or(z.literal('')),
   fileUrl: z.string().url('请输入有效的URL').optional().or(z.literal('')),
   fileSize: z.coerce
-    .number({ invalid_type_error: '请输入有效的文件大小' })
+    .number({ message: '请输入有效的文件大小' })
     .optional()
     .or(z.literal('')),
 })

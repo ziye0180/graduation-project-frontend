@@ -19,6 +19,8 @@ import {
   AudioWaveform,
   Command,
   GalleryVerticalEnd,
+  BookText,
+  FolderKanban,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -63,6 +65,16 @@ export const sidebarData: SidebarData = {
           title: '用户',
           url: '/users',
           icon: Users,
+        },
+        {
+          title: '文献管理',
+          url: '/literature',
+          icon: BookText,
+        },
+        {
+          title: '项目管理',
+          url: '/projects',
+          icon: FolderKanban,
         },
       ],
     },

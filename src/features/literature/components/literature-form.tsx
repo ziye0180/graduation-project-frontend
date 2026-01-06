@@ -63,7 +63,7 @@ export function LiteratureForm({
   const isEdit = !!currentLiterature
 
   const form = useForm<LiteratureFormData>({
-    resolver: zodResolver(literatureFormSchema),
+    resolver: zodResolver(literatureFormSchema) as never,
     defaultValues: isEdit
       ? {
           title: currentLiterature.title,
@@ -132,7 +132,7 @@ export function LiteratureForm({
         className='space-y-4 px-0.5'
       >
         <FormField
-          control={form.control}
+          control={form.control as never}
           name='title'
           render={({ field }) => (
             <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
@@ -153,7 +153,7 @@ export function LiteratureForm({
         />
 
         <FormField
-          control={form.control}
+          control={form.control as never}
           name='authors'
           render={({ field }) => (
             <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
@@ -172,7 +172,7 @@ export function LiteratureForm({
         />
 
         <FormField
-          control={form.control}
+          control={form.control as never}
           name='abstractText'
           render={({ field }) => (
             <FormItem className='grid grid-cols-6 items-start space-y-0 gap-x-4 gap-y-1'>
@@ -190,7 +190,7 @@ export function LiteratureForm({
         />
 
         <FormField
-          control={form.control}
+          control={form.control as never}
           name='keywords'
           render={({ field }) => (
             <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
@@ -209,7 +209,7 @@ export function LiteratureForm({
         />
 
         <FormField
-          control={form.control}
+          control={form.control as never}
           name='doi'
           render={({ field }) => (
             <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
@@ -228,7 +228,7 @@ export function LiteratureForm({
         />
 
         <FormField
-          control={form.control}
+          control={form.control as never}
           name='publishYear'
           render={({ field }) => (
             <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
@@ -248,7 +248,7 @@ export function LiteratureForm({
         />
 
         <FormField
-          control={form.control}
+          control={form.control as never}
           name='journal'
           render={({ field }) => (
             <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
@@ -267,7 +267,7 @@ export function LiteratureForm({
         />
 
         <FormField
-          control={form.control}
+          control={form.control as never}
           name='categoryId'
           render={({ field }) => (
             <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
@@ -285,7 +285,7 @@ export function LiteratureForm({
         />
 
         <FormField
-          control={form.control}
+          control={form.control as never}
           name='fileUrl'
           render={({ field }) => (
             <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
@@ -304,7 +304,7 @@ export function LiteratureForm({
         />
 
         <FormField
-          control={form.control}
+          control={form.control as never}
           name='fileSize'
           render={({ field }) => (
             <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
