@@ -35,6 +35,7 @@ import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_auth
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects/$id'
+import { Route as AuthenticatedLiteratureIdRouteImport } from './routes/_authenticated/literature/$id'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -177,6 +178,12 @@ const AuthenticatedProjectsIdRoute = AuthenticatedProjectsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AuthenticatedProjectsRouteRoute,
 } as any)
+const AuthenticatedLiteratureIdRoute =
+  AuthenticatedLiteratureIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedLiteratureRouteRoute,
+  } as any)
 const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
     id: '/errors/$error',
@@ -200,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/503': typeof errors503Route
   '/': typeof AuthenticatedIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
+  '/literature/$id': typeof AuthenticatedLiteratureIdRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -225,6 +233,7 @@ export interface FileRoutesByTo {
   '/503': typeof errors503Route
   '/': typeof AuthenticatedIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
+  '/literature/$id': typeof AuthenticatedLiteratureIdRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -255,6 +264,7 @@ export interface FileRoutesById {
   '/(errors)/503': typeof errors503Route
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
+  '/_authenticated/literature/$id': typeof AuthenticatedLiteratureIdRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
     | '/503'
     | '/'
     | '/errors/$error'
+    | '/literature/$id'
     | '/projects/$id'
     | '/settings/account'
     | '/settings/appearance'
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/503'
     | '/'
     | '/errors/$error'
+    | '/literature/$id'
     | '/projects/$id'
     | '/settings/account'
     | '/settings/appearance'
@@ -339,6 +351,7 @@ export interface FileRouteTypes {
     | '/(errors)/503'
     | '/_authenticated/'
     | '/_authenticated/errors/$error'
+    | '/_authenticated/literature/$id'
     | '/_authenticated/projects/$id'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
@@ -550,6 +563,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsIdRouteImport
       parentRoute: typeof AuthenticatedProjectsRouteRoute
     }
+    '/_authenticated/literature/$id': {
+      id: '/_authenticated/literature/$id'
+      path: '/$id'
+      fullPath: '/literature/$id'
+      preLoaderRoute: typeof AuthenticatedLiteratureIdRouteImport
+      parentRoute: typeof AuthenticatedLiteratureRouteRoute
+    }
     '/_authenticated/errors/$error': {
       id: '/_authenticated/errors/$error'
       path: '/errors/$error'
@@ -561,11 +581,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedLiteratureRouteRouteChildren {
+  AuthenticatedLiteratureIdRoute: typeof AuthenticatedLiteratureIdRoute
   AuthenticatedLiteratureIndexRoute: typeof AuthenticatedLiteratureIndexRoute
 }
 
 const AuthenticatedLiteratureRouteRouteChildren: AuthenticatedLiteratureRouteRouteChildren =
   {
+    AuthenticatedLiteratureIdRoute: AuthenticatedLiteratureIdRoute,
     AuthenticatedLiteratureIndexRoute: AuthenticatedLiteratureIndexRoute,
   }
 
