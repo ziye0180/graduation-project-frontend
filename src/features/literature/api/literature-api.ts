@@ -1,4 +1,13 @@
 import { api } from '@/lib/axios'
+import { MOCK_ENABLED } from '@/mocks'
+import {
+  mockGetLiteratureList,
+  mockGetLiteratureById,
+  mockCreateLiterature,
+  mockUpdateLiterature,
+  mockDeleteLiterature,
+  mockGetCategoryTree,
+} from '@/mocks/handlers/literature-handlers'
 import type { Literature, LiteratureRequest, LiteratureCategory, PageResponse } from '@/types/literature'
 
 /**
@@ -17,6 +26,9 @@ export async function getLiteratureList(params: {
   categoryId?: number
   keyword?: string
 }): Promise<PageResponse<Literature>> {
+  if (MOCK_ENABLED) {
+    return mockGetLiteratureList(params)
+  }
   const response = await api.get<{ data: PageResponse<Literature> }>('/api/literature', {
     params: {
       pageNum: params.pageNum || 1,
@@ -35,6 +47,9 @@ export async function getLiteratureList(params: {
  * @returns 文献详情
  */
 export async function getLiteratureById(id: number): Promise<Literature> {
+  if (MOCK_ENABLED) {
+    return mockGetLiteratureById(id)
+  }
   const response = await api.get<{ data: Literature }>(`/api/literature/${id}`)
   return response.data.data
 }
@@ -46,6 +61,9 @@ export async function getLiteratureById(id: number): Promise<Literature> {
  * @returns 创建的文献
  */
 export async function createLiterature(data: LiteratureRequest): Promise<Literature> {
+  if (MOCK_ENABLED) {
+    return mockCreateLiterature(data)
+  }
   const response = await api.post<{ data: Literature }>('/api/literature', data)
   return response.data.data
 }
@@ -58,6 +76,9 @@ export async function createLiterature(data: LiteratureRequest): Promise<Literat
  * @returns 更新后的文献
  */
 export async function updateLiterature(id: number, data: LiteratureRequest): Promise<Literature> {
+  if (MOCK_ENABLED) {
+    return mockUpdateLiterature(id, data)
+  }
   const response = await api.put<{ data: Literature }>(`/api/literature/${id}`, data)
   return response.data.data
 }
@@ -68,6 +89,9 @@ export async function updateLiterature(id: number, data: LiteratureRequest): Pro
  * @param id - 文献 ID
  */
 export async function deleteLiterature(id: number): Promise<void> {
+  if (MOCK_ENABLED) {
+    return mockDeleteLiterature(id)
+  }
   await api.delete(`/api/literature/${id}`)
 }
 
@@ -77,6 +101,9 @@ export async function deleteLiterature(id: number): Promise<void> {
  * @returns 文献分类树
  */
 export async function getCategoryTree(): Promise<LiteratureCategory[]> {
+  if (MOCK_ENABLED) {
+    return mockGetCategoryTree()
+  }
   const response = await api.get<{ data: LiteratureCategory[] }>('/api/literature/categories/tree')
   return response.data.data
 }

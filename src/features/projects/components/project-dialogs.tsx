@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { AlertTriangle } from 'lucide-react'
-import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -19,21 +18,21 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { ProjectForm } from './project-form'
 import type { Project } from '@/types/project'
 import type { ProjectFormValues } from '../data/project-form-schema'
-import { useUpdateProject } from '../hooks/use-project'
+import { useCreateProject, useUpdateProject, useDeleteProject } from '../hooks/use-project'
 
 /**
  * 项目状态映射
  */
 const PROJECT_STATUS_MAP: Record<number, string> = {
-  0: '进行中',
-  1: '已完成',
-  2: '已归档',
+  0: '已归档',
+  1: '进行中',
+  2: '已完成',
 }
 
 /**
  * 项目创建对话框属性
  */
-type CreateProjectDialogProps = {
+type ProjectCreateDialogProps = {
   /** 对话框打开状态 */
   open: boolean
   /** 对话框状态改变回调 */
@@ -50,13 +49,27 @@ type CreateProjectDialogProps = {
  *
  * @author ziye
  */
-export function CreateProjectDialog({
+export function ProjectCreateDialog({
   open,
   onOpenChange,
-}: CreateProjectDialogProps) {
+}: ProjectCreateDialogProps) {
+  const createMutation = useCreateProject()
+
   const handleSubmit = (data: ProjectFormValues) => {
-    showSubmittedData(data, '成功创建项目：')
-    onOpenChange(false)
+    createMutation.mutate(
+      {
+        name: data.name,
+        description: data.description || undefined,
+        status: data.status,
+        startDate: data.startDate || undefined,
+        endDate: data.endDate || undefined,
+      },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+        },
+      }
+    )
   }
 
   return (
@@ -75,8 +88,12 @@ export function CreateProjectDialog({
           />
         </div>
         <DialogFooter>
-          <Button type='submit' form='project-create-form'>
-            保存
+          <Button
+            type='submit'
+            form='project-create-form'
+            disabled={createMutation.isPending}
+          >
+            {createMutation.isPending ? '保存中...' : '保存'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -87,13 +104,13 @@ export function CreateProjectDialog({
 /**
  * 项目编辑对话框属性
  */
-type EditProjectDialogProps = {
+type ProjectEditDialogProps = {
   /** 对话框打开状态 */
   open: boolean
   /** 对话框状态改变回调 */
   onOpenChange: (open: boolean) => void
   /** 当前编辑的项目数据 */
-  currentProject: Project
+  currentProject: Project | null
 }
 
 /**
@@ -106,15 +123,17 @@ type EditProjectDialogProps = {
  *
  * @author ziye
  */
-export function EditProjectDialog({
+export function ProjectEditDialog({
   open,
   onOpenChange,
   currentProject,
-}: EditProjectDialogProps) {
-  const updateProjectMutation = useUpdateProject()
+}: ProjectEditDialogProps) {
+  const updateMutation = useUpdateProject()
 
   const handleSubmit = (data: ProjectFormValues) => {
-    updateProjectMutation.mutate(
+    if (!currentProject) return
+
+    updateMutation.mutate(
       {
         id: currentProject.id,
         data: {
@@ -133,6 +152,8 @@ export function EditProjectDialog({
     )
   }
 
+  if (!currentProject) return null
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-3xl'>
@@ -150,8 +171,12 @@ export function EditProjectDialog({
           />
         </div>
         <DialogFooter>
-          <Button type='submit' form='project-edit-form'>
-            保存
+          <Button
+            type='submit'
+            form='project-edit-form'
+            disabled={updateMutation.isPending}
+          >
+            {updateMutation.isPending ? '保存中...' : '保存'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -162,13 +187,13 @@ export function EditProjectDialog({
 /**
  * 项目删除对话框属性
  */
-type DeleteProjectDialogProps = {
+type ProjectDeleteDialogProps = {
   /** 对话框打开状态 */
   open: boolean
   /** 对话框状态改变回调 */
   onOpenChange: (open: boolean) => void
   /** 当前要删除的项目数据 */
-  currentProject: Project
+  currentProject: Project | null
 }
 
 /**
@@ -181,20 +206,26 @@ type DeleteProjectDialogProps = {
  *
  * @author ziye
  */
-export function DeleteProjectDialog({
+export function ProjectDeleteDialog({
   open,
   onOpenChange,
   currentProject,
-}: DeleteProjectDialogProps) {
+}: ProjectDeleteDialogProps) {
   const [value, setValue] = useState('')
+  const deleteMutation = useDeleteProject()
 
   const handleDelete = () => {
-    if (value.trim() !== currentProject.name) return
+    if (!currentProject || value.trim() !== currentProject.name) return
 
-    onOpenChange(false)
-    showSubmittedData(currentProject, '成功删除项目：')
-    setValue('')
+    deleteMutation.mutate(currentProject.id, {
+      onSuccess: () => {
+        onOpenChange(false)
+        setValue('')
+      },
+    })
   }
+
+  if (!currentProject) return null
 
   return (
     <ConfirmDialog
@@ -204,7 +235,7 @@ export function DeleteProjectDialog({
         if (!state) setValue('')
       }}
       handleConfirm={handleDelete}
-      disabled={value.trim() !== currentProject.name}
+      disabled={value.trim() !== currentProject.name || deleteMutation.isPending}
       title={
         <span className='text-destructive'>
           <AlertTriangle
@@ -238,7 +269,7 @@ export function DeleteProjectDialog({
           </Alert>
         </div>
       }
-      confirmText='删除'
+      confirmText={deleteMutation.isPending ? '删除中...' : '删除'}
       destructive
     />
   )
@@ -247,13 +278,13 @@ export function DeleteProjectDialog({
 /**
  * 项目查看对话框属性
  */
-type ViewProjectDialogProps = {
+type ProjectViewDialogProps = {
   /** 对话框打开状态 */
   open: boolean
   /** 对话框状态改变回调 */
   onOpenChange: (open: boolean) => void
   /** 当前查看的项目数据 */
-  currentProject: Project
+  currentProject: Project | null
 }
 
 /**
@@ -288,11 +319,13 @@ function InfoRow({
  *
  * @author ziye
  */
-export function ViewProjectDialog({
+export function ProjectViewDialog({
   open,
   onOpenChange,
   currentProject,
-}: ViewProjectDialogProps) {
+}: ProjectViewDialogProps) {
+  if (!currentProject) return null
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-3xl'>

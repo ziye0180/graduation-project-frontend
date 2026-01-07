@@ -1,4 +1,21 @@
 import { api } from '@/lib/axios'
+import { MOCK_ENABLED } from '@/mocks'
+import {
+  mockGetProjectList,
+  mockGetProjectById,
+  mockCreateProject,
+  mockUpdateProject,
+  mockDeleteProject,
+  mockGetMyProjects,
+  mockGetProjectMembers,
+  mockAddProjectMember,
+  mockRemoveProjectMember,
+  mockUpdateMemberRole,
+  mockGetProjectLiterature,
+  mockAddProjectLiterature,
+  mockRemoveProjectLiterature,
+} from '@/mocks/handlers/project-handlers'
+import { useAuthStore } from '@/stores/auth-store'
 import type { Project, ProjectRequest, ProjectMember, AddMemberRequest, PageResponse } from '@/types/project'
 import type { Literature } from '@/types/literature'
 
@@ -18,6 +35,14 @@ export async function getProjectList(params: {
   name?: string
   status?: number
 }): Promise<PageResponse<Project>> {
+  if (MOCK_ENABLED) {
+    return mockGetProjectList({
+      pageNum: params.page,
+      pageSize: params.size,
+      keyword: params.name,
+      status: params.status,
+    })
+  }
   const response = await api.get<{ data: PageResponse<Project> }>('/api/projects', {
     params: {
       page: params.page || 1,
@@ -36,6 +61,9 @@ export async function getProjectList(params: {
  * @returns 项目详情
  */
 export async function getProjectById(id: number): Promise<Project> {
+  if (MOCK_ENABLED) {
+    return mockGetProjectById(id)
+  }
   const response = await api.get<{ data: Project }>(`/api/projects/${id}`)
   return response.data.data
 }
@@ -47,6 +75,10 @@ export async function getProjectById(id: number): Promise<Project> {
  * @returns 创建的项目
  */
 export async function createProject(data: ProjectRequest): Promise<Project> {
+  if (MOCK_ENABLED) {
+    const userId = useAuthStore.getState().auth.user?.id || 1
+    return mockCreateProject(data, userId)
+  }
   const response = await api.post<{ data: Project }>('/api/projects', data)
   return response.data.data
 }
@@ -59,6 +91,9 @@ export async function createProject(data: ProjectRequest): Promise<Project> {
  * @returns 更新后的项目
  */
 export async function updateProject(id: number, data: ProjectRequest): Promise<Project> {
+  if (MOCK_ENABLED) {
+    return mockUpdateProject(id, data)
+  }
   const response = await api.put<{ data: Project }>(`/api/projects/${id}`, data)
   return response.data.data
 }
@@ -69,6 +104,9 @@ export async function updateProject(id: number, data: ProjectRequest): Promise<P
  * @param id - 项目 ID
  */
 export async function deleteProject(id: number): Promise<void> {
+  if (MOCK_ENABLED) {
+    return mockDeleteProject(id)
+  }
   await api.delete(`/api/projects/${id}`)
 }
 
@@ -78,6 +116,10 @@ export async function deleteProject(id: number): Promise<void> {
  * @returns 我的项目列表
  */
 export async function getMyProjects(): Promise<Project[]> {
+  if (MOCK_ENABLED) {
+    const userId = useAuthStore.getState().auth.user?.id || 1
+    return mockGetMyProjects(userId)
+  }
   const response = await api.get<{ data: Project[] }>('/api/projects/my')
   return response.data.data
 }
@@ -91,6 +133,9 @@ export async function getMyProjects(): Promise<Project[]> {
  * @returns 项目成员列表
  */
 export async function getProjectMembers(projectId: number): Promise<ProjectMember[]> {
+  if (MOCK_ENABLED) {
+    return mockGetProjectMembers(projectId)
+  }
   const response = await api.get<{ data: ProjectMember[] }>(`/api/projects/${projectId}/members`)
   return response.data.data
 }
@@ -103,6 +148,9 @@ export async function getProjectMembers(projectId: number): Promise<ProjectMembe
  * @returns 添加的成员信息
  */
 export async function addProjectMember(projectId: number, data: AddMemberRequest): Promise<ProjectMember> {
+  if (MOCK_ENABLED) {
+    return mockAddProjectMember(projectId, data)
+  }
   const response = await api.post<{ data: ProjectMember }>(`/api/projects/${projectId}/members`, data)
   return response.data.data
 }
@@ -114,6 +162,9 @@ export async function addProjectMember(projectId: number, data: AddMemberRequest
  * @param userId - 用户 ID
  */
 export async function removeProjectMember(projectId: number, userId: number): Promise<void> {
+  if (MOCK_ENABLED) {
+    return mockRemoveProjectMember(projectId, userId)
+  }
   await api.delete(`/api/projects/${projectId}/members/${userId}`)
 }
 
@@ -126,6 +177,9 @@ export async function removeProjectMember(projectId: number, userId: number): Pr
  * @returns 更新后的成员信息
  */
 export async function updateMemberRole(projectId: number, userId: number, role: number): Promise<ProjectMember> {
+  if (MOCK_ENABLED) {
+    return mockUpdateMemberRole(projectId, userId, role)
+  }
   const response = await api.put<{ data: ProjectMember }>(`/api/projects/${projectId}/members/${userId}/role?role=${role}`)
   return response.data.data
 }
@@ -139,6 +193,9 @@ export async function updateMemberRole(projectId: number, userId: number, role: 
  * @returns 文献列表
  */
 export async function getProjectLiterature(projectId: number): Promise<Literature[]> {
+  if (MOCK_ENABLED) {
+    return mockGetProjectLiterature(projectId)
+  }
   const response = await api.get<{ data: Literature[] }>(`/api/projects/${projectId}/literature`)
   return response.data.data
 }
@@ -150,6 +207,10 @@ export async function getProjectLiterature(projectId: number): Promise<Literatur
  * @param literatureIds - 文献 ID 列表
  */
 export async function addProjectLiterature(projectId: number, literatureIds: number[]): Promise<void> {
+  if (MOCK_ENABLED) {
+    const userId = useAuthStore.getState().auth.user?.id || 1
+    return mockAddProjectLiterature(projectId, literatureIds, userId)
+  }
   await api.post(`/api/projects/${projectId}/literature`, literatureIds)
 }
 
@@ -160,5 +221,8 @@ export async function addProjectLiterature(projectId: number, literatureIds: num
  * @param literatureId - 文献 ID
  */
 export async function removeProjectLiterature(projectId: number, literatureId: number): Promise<void> {
+  if (MOCK_ENABLED) {
+    return mockRemoveProjectLiterature(projectId, literatureId)
+  }
   await api.delete(`/api/projects/${projectId}/literature/${literatureId}`)
 }

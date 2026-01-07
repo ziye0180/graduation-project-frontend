@@ -4,50 +4,19 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Plus } from 'lucide-react'
 import { LiteratureProvider } from './components/literature-provider'
 import { LiteratureTable } from './components/literature-table'
-
-// 模拟数据，实际应从 API 获取
-const mockLiteratures = [
-  {
-    id: 1,
-    title: '深度学习在自然语言处理中的应用研究',
-    authors: '张三, 李四, 王五',
-    abstractText: '本文探讨了深度学习技术在自然语言处理领域的最新应用...',
-    keywords: '深度学习, 自然语言处理, 神经网络',
-    doi: '10.1234/example.2023.001',
-    publishYear: 2023,
-    journal: '计算机研究与发展',
-    categoryId: 1,
-    categoryName: '人工智能',
-    fileUrl: '/files/literature_1.pdf',
-    fileSize: 2048576,
-    uploaderId: 1,
-    uploaderName: 'admin',
-    status: 1,
-    createdAt: '2024-01-15T10:30:00Z',
-    updatedAt: '2024-01-15T10:30:00Z',
-  },
-  {
-    id: 2,
-    title: '基于机器学习的图像识别算法优化',
-    authors: '赵六, 孙七',
-    abstractText: '提出了一种新的图像识别算法优化方法...',
-    keywords: '机器学习, 图像识别, 算法优化',
-    doi: '10.1234/example.2023.002',
-    publishYear: 2023,
-    journal: 'IEEE Transactions on Pattern Analysis',
-    categoryId: 1,
-    categoryName: '人工智能',
-    fileUrl: '/files/literature_2.pdf',
-    fileSize: 3145728,
-    uploaderId: 2,
-    uploaderName: 'user1',
-    status: 1,
-    createdAt: '2024-02-20T14:20:00Z',
-    updatedAt: '2024-02-20T14:20:00Z',
-  },
-]
+import {
+  LiteratureCreateDialog,
+  LiteratureDeleteDialog,
+  LiteratureEditDialog,
+  LiteratureViewDialog,
+} from './components/literature-dialogs'
+import { useLiteratureList } from './hooks/use-literature'
+import { useLiteratureDialogs } from './hooks/use-literature-dialogs'
 
 /**
  * 文献管理页面
@@ -55,6 +24,24 @@ const mockLiteratures = [
  * @description 文献列表主页面，包含搜索、筛选和表格展示功能
  */
 export function Literature() {
+  const { data, isLoading } = useLiteratureList({
+    pageNum: 1,
+    pageSize: 20,
+  })
+
+  const {
+    createOpen,
+    editOpen,
+    deleteOpen,
+    viewOpen,
+    selectedLiterature,
+    openCreate,
+    setCreateOpen,
+    setEditOpen,
+    setDeleteOpen,
+    setViewOpen,
+  } = useLiteratureDialogs()
+
   return (
     <LiteratureProvider>
       <Header fixed>
@@ -74,9 +61,39 @@ export function Literature() {
               管理和浏览文献资源
             </p>
           </div>
+          <Button onClick={openCreate}>
+            <Plus className='mr-2 h-4 w-4' />
+            新建文献
+          </Button>
         </div>
-        <LiteratureTable data={mockLiteratures} />
+
+        {isLoading ? (
+          <div className='space-y-4'>
+            <Skeleton className='h-10 w-full' />
+            <Skeleton className='h-[400px] w-full' />
+          </div>
+        ) : (
+          <LiteratureTable data={data?.records || []} />
+        )}
       </Main>
+
+      {/* 对话框 */}
+      <LiteratureCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <LiteratureEditDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        currentLiterature={selectedLiterature}
+      />
+      <LiteratureDeleteDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        currentLiterature={selectedLiterature}
+      />
+      <LiteratureViewDialog
+        open={viewOpen}
+        onOpenChange={setViewOpen}
+        currentLiterature={selectedLiterature}
+      />
     </LiteratureProvider>
   )
 }

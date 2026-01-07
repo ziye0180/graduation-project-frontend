@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { AlertTriangle } from 'lucide-react'
-import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -17,6 +16,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { LiteratureForm } from './literature-form'
+import {
+  useCreateLiterature,
+  useUpdateLiterature,
+  useDeleteLiterature,
+  useCategoryTree,
+} from '../hooks/use-literature'
 import type { Literature } from '../data/schema'
 import type { LiteratureCategory } from '@/types/literature'
 import type { LiteratureFormData } from '../data/literature-form-schema'
@@ -46,11 +51,32 @@ type LiteratureCreateDialogProps = {
 export function LiteratureCreateDialog({
   open,
   onOpenChange,
-  categories,
+  categories: propCategories,
 }: LiteratureCreateDialogProps) {
+  const createMutation = useCreateLiterature()
+  const { data: fetchedCategories } = useCategoryTree()
+  const categories = propCategories || fetchedCategories
+
   const handleSubmit = (data: LiteratureFormData) => {
-    showSubmittedData(data, '成功创建文献：')
-    onOpenChange(false)
+    createMutation.mutate(
+      {
+        title: data.title,
+        authors: data.authors || undefined,
+        abstractText: data.abstractText || undefined,
+        keywords: data.keywords || undefined,
+        doi: data.doi || undefined,
+        publishYear: data.publishYear || undefined,
+        journal: data.journal || undefined,
+        categoryId: data.categoryId || undefined,
+        fileUrl: data.fileUrl || undefined,
+        fileSize: data.fileSize || undefined,
+      },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+        },
+      }
+    )
   }
 
   return (
@@ -70,8 +96,12 @@ export function LiteratureCreateDialog({
           />
         </div>
         <DialogFooter>
-          <Button type='submit' form='literature-create-form'>
-            保存
+          <Button
+            type='submit'
+            form='literature-create-form'
+            disabled={createMutation.isPending}
+          >
+            {createMutation.isPending ? '保存中...' : '保存'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -88,7 +118,7 @@ type LiteratureEditDialogProps = {
   /** 对话框状态改变回调 */
   onOpenChange: (open: boolean) => void
   /** 当前编辑的文献数据 */
-  currentLiterature: Literature
+  currentLiterature: Literature | null
   /** 分类树数据 */
   categories?: LiteratureCategory[]
 }
@@ -107,12 +137,40 @@ export function LiteratureEditDialog({
   open,
   onOpenChange,
   currentLiterature,
-  categories,
+  categories: propCategories,
 }: LiteratureEditDialogProps) {
+  const updateMutation = useUpdateLiterature()
+  const { data: fetchedCategories } = useCategoryTree()
+  const categories = propCategories || fetchedCategories
+
   const handleSubmit = (data: LiteratureFormData) => {
-    showSubmittedData(data, '成功更新文献：')
-    onOpenChange(false)
+    if (!currentLiterature) return
+
+    updateMutation.mutate(
+      {
+        id: currentLiterature.id,
+        data: {
+          title: data.title,
+          authors: data.authors || undefined,
+          abstractText: data.abstractText || undefined,
+          keywords: data.keywords || undefined,
+          doi: data.doi || undefined,
+          publishYear: data.publishYear || undefined,
+          journal: data.journal || undefined,
+          categoryId: data.categoryId || undefined,
+          fileUrl: data.fileUrl || undefined,
+          fileSize: data.fileSize || undefined,
+        },
+      },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+        },
+      }
+    )
   }
+
+  if (!currentLiterature) return null
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -132,8 +190,12 @@ export function LiteratureEditDialog({
           />
         </div>
         <DialogFooter>
-          <Button type='submit' form='literature-edit-form'>
-            保存
+          <Button
+            type='submit'
+            form='literature-edit-form'
+            disabled={updateMutation.isPending}
+          >
+            {updateMutation.isPending ? '保存中...' : '保存'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -150,7 +212,7 @@ type LiteratureDeleteDialogProps = {
   /** 对话框状态改变回调 */
   onOpenChange: (open: boolean) => void
   /** 当前要删除的文献数据 */
-  currentLiterature: Literature
+  currentLiterature: Literature | null
 }
 
 /**
@@ -169,14 +231,20 @@ export function LiteratureDeleteDialog({
   currentLiterature,
 }: LiteratureDeleteDialogProps) {
   const [value, setValue] = useState('')
+  const deleteMutation = useDeleteLiterature()
 
   const handleDelete = () => {
-    if (value.trim() !== currentLiterature.title) return
+    if (!currentLiterature || value.trim() !== currentLiterature.title) return
 
-    onOpenChange(false)
-    showSubmittedData(currentLiterature, '成功删除文献：')
-    setValue('')
+    deleteMutation.mutate(currentLiterature.id, {
+      onSuccess: () => {
+        onOpenChange(false)
+        setValue('')
+      },
+    })
   }
+
+  if (!currentLiterature) return null
 
   return (
     <ConfirmDialog
@@ -186,7 +254,7 @@ export function LiteratureDeleteDialog({
         if (!state) setValue('')
       }}
       handleConfirm={handleDelete}
-      disabled={value.trim() !== currentLiterature.title}
+      disabled={value.trim() !== currentLiterature.title || deleteMutation.isPending}
       title={
         <span className='text-destructive'>
           <AlertTriangle
@@ -220,7 +288,7 @@ export function LiteratureDeleteDialog({
           </Alert>
         </div>
       }
-      confirmText='删除'
+      confirmText={deleteMutation.isPending ? '删除中...' : '删除'}
       destructive
     />
   )
@@ -235,7 +303,7 @@ type LiteratureViewDialogProps = {
   /** 对话框状态改变回调 */
   onOpenChange: (open: boolean) => void
   /** 当前查看的文献数据 */
-  currentLiterature: Literature
+  currentLiterature: Literature | null
 }
 
 /**
@@ -275,6 +343,7 @@ export function LiteratureViewDialog({
   onOpenChange,
   currentLiterature,
 }: LiteratureViewDialogProps) {
+  if (!currentLiterature) return null
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
