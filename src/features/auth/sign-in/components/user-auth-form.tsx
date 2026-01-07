@@ -28,7 +28,7 @@ const formSchema = z.object({
   password: z
     .string()
     .min(1, '请输入密码')
-    .min(7, '密码至少需要7个字符'),
+    .min(6, '密码至少需要6个字符'),
 })
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLFormElement> {
@@ -69,7 +69,7 @@ export function UserAuthForm({
         status: response.user.status,
       }
 
-      auth.setAuth(authUser, response.access_token)
+      auth.setAuth(authUser, response.accessToken)
 
       const targetPath = redirectTo || '/'
       navigate({ to: targetPath, replace: true })

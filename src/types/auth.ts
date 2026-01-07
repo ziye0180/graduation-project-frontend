@@ -20,9 +20,9 @@ export interface RegisterRequest {
  * 登录响应数据。
  */
 export interface LoginResponse {
-  access_token: string
-  token_type: string
-  expires_in: number
+  accessToken: string
+  tokenType: string
+  expiresIn: number
   user: UserResponse
 }
 
@@ -36,8 +36,9 @@ export interface UserResponse {
   nickname: string | null
   avatar: string | null
   status: number
-  created_at: string
-  updated_at: string
+  statusDescription: string
+  createdAt: string
+  updatedAt: string
 }
 
 /**

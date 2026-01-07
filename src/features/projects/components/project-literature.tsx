@@ -137,11 +137,11 @@ export function ProjectLiterature({ projectId }: ProjectLiteratureProps) {
                         {literature.journal || '-'}
                       </TableCell>
                       <TableCell className='text-muted-foreground'>
-                        {literature.publish_year || '-'}
+                        {literature.publishYear || '-'}
                       </TableCell>
                       <TableCell>
-                        {literature.category_name ? (
-                          <Badge variant='outline'>{literature.category_name}</Badge>
+                        {literature.categoryName ? (
+                          <Badge variant='outline'>{literature.categoryName}</Badge>
                         ) : (
                           '-'
                         )}

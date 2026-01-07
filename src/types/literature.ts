@@ -5,20 +5,21 @@ export interface Literature {
   id: number
   title: string
   authors: string | null
-  abstract_text: string | null
+  abstractText: string | null
   keywords: string | null
   doi: string | null
-  publish_year: number | null
+  publishYear: number | null
   journal: string | null
-  category_id: number | null
-  category_name: string | null
-  file_url: string | null
-  file_size: number | null
-  uploader_id: number
-  uploader_name: string | null
+  categoryId: number | null
+  categoryName: string | null
+  fileUrl: string | null
+  fileSize: number | null
+  uploaderId: number
+  uploaderName: string | null
   status: number
-  created_at: string
-  updated_at: string
+  statusDescription: string
+  createdAt: string
+  updatedAt: string
 }
 
 /**
@@ -27,14 +28,14 @@ export interface Literature {
 export interface LiteratureRequest {
   title: string
   authors?: string
-  abstract_text?: string
+  abstractText?: string
   keywords?: string
   doi?: string
-  publish_year?: number
+  publishYear?: number
   journal?: string
-  category_id?: number
-  file_url?: string
-  file_size?: number
+  categoryId?: number
+  fileUrl?: string
+  fileSize?: number
 }
 
 /**
@@ -43,8 +44,8 @@ export interface LiteratureRequest {
 export interface LiteratureCategory {
   id: number
   name: string
-  parent_id: number | null
-  sort_order: number
+  parentId: number | null
+  sortOrder: number
   children: LiteratureCategory[]
 }
 

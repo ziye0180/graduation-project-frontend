@@ -30,7 +30,7 @@ const formSchema = z
     password: z
       .string()
       .min(1, '请输入密码')
-      .min(7, '密码至少需要7个字符'),
+      .min(6, '密码至少需要6个字符'),
     confirmPassword: z.string().min(1, '请确认密码'),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -94,7 +94,7 @@ export function SignUpForm({
       }
 
       // 保存认证信息到 store
-      auth.setAuth(authUser, response.access_token)
+      auth.setAuth(authUser, response.accessToken)
 
       toast.success('注册成功！')
 

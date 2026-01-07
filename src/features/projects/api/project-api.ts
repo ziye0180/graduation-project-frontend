@@ -126,9 +126,7 @@ export async function removeProjectMember(projectId: number, userId: number): Pr
  * @returns 更新后的成员信息
  */
 export async function updateMemberRole(projectId: number, userId: number, role: number): Promise<ProjectMember> {
-  const response = await api.put<{ data: ProjectMember }>(`/api/projects/${projectId}/members/${userId}/role`, {
-    role,
-  })
+  const response = await api.put<{ data: ProjectMember }>(`/api/projects/${projectId}/members/${userId}/role?role=${role}`)
   return response.data.data
 }
 
@@ -152,7 +150,7 @@ export async function getProjectLiterature(projectId: number): Promise<Literatur
  * @param literatureIds - 文献 ID 列表
  */
 export async function addProjectLiterature(projectId: number, literatureIds: number[]): Promise<void> {
-  await api.post(`/api/projects/${projectId}/literature`, { literatureIds })
+  await api.post(`/api/projects/${projectId}/literature`, literatureIds)
 }
 
 /**

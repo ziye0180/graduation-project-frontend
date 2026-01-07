@@ -182,7 +182,7 @@ export function LinkLiteratureDialog({
                         {literature.journal || '-'}
                       </TableCell>
                       <TableCell className='text-muted-foreground'>
-                        {literature.publish_year || '-'}
+                        {literature.publishYear || '-'}
                       </TableCell>
                     </TableRow>
                   ))}
