@@ -23,10 +23,9 @@ export function AppTitle() {
             <Link
               to='/'
               onClick={() => setOpenMobile(false)}
-              className='grid flex-1 text-start text-sm leading-tight'
+              className='flex flex-1 items-center text-start text-sm leading-tight'
             >
               <span className='truncate font-bold'>科研文献管理</span>
-              <span className='truncate text-xs'>React 19 + Spring Boot</span>
             </Link>
             <ToggleSidebar />
           </div>

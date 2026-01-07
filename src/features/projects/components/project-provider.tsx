@@ -1,10 +1,10 @@
 'use client'
 
 import {
-  CreateProjectDialog,
-  EditProjectDialog,
-  DeleteProjectDialog,
-  ViewProjectDialog,
+  ProjectCreateDialog,
+  ProjectEditDialog,
+  ProjectDeleteDialog,
+  ProjectViewDialog,
 } from './project-dialogs'
 import { useProjectDialogs } from '../hooks/use-project-dialogs'
 
@@ -47,20 +47,20 @@ export function ProjectDialogsProvider() {
 
   return (
     <>
-      <CreateProjectDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <ProjectCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
       {selectedProject && (
         <>
-          <EditProjectDialog
+          <ProjectEditDialog
             open={editOpen}
             onOpenChange={setEditOpen}
             currentProject={selectedProject}
           />
-          <DeleteProjectDialog
+          <ProjectDeleteDialog
             open={deleteOpen}
             onOpenChange={setDeleteOpen}
             currentProject={selectedProject}
           />
-          <ViewProjectDialog
+          <ProjectViewDialog
             open={viewOpen}
             onOpenChange={setViewOpen}
             currentProject={selectedProject}
