@@ -1,9 +1,7 @@
 import {
   Construction,
-  LayoutDashboard,
   Monitor,
   Bug,
-  ListTodo,
   FileX,
   HelpCircle,
   Lock,
@@ -14,7 +12,6 @@ import {
   Wrench,
   UserCog,
   UserX,
-  Users,
   ShieldCheck,
   AudioWaveform,
   Command,
@@ -51,21 +48,21 @@ export const sidebarData: SidebarData = {
     {
       title: '通用',
       items: [
-        {
-          title: '仪表盘',
-          url: '/',
-          icon: LayoutDashboard,
-        },
-        {
-          title: '任务',
-          url: '/tasks',
-          icon: ListTodo,
-        },
-        {
-          title: '用户',
-          url: '/users',
-          icon: Users,
-        },
+        // {
+        //   title: '仪表盘',
+        //   url: '/',
+        //   icon: LayoutDashboard,
+        // },
+        // {
+        //   title: '任务',
+        //   url: '/tasks',
+        //   icon: ListTodo,
+        // },
+        // {
+        //   title: '用户',
+        //   url: '/users',
+        //   icon: Users,
+        // },
         {
           title: '文献管理',
           url: '/literature',
